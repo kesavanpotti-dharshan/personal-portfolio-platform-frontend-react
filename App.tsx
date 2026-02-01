@@ -18,7 +18,8 @@ import {
   Download,
   Globe,
   ArrowUp,
-  FileText
+  FileText,
+  Calendar
 } from 'lucide-react';
 import { PERSONAL_INFO, SKILL_CATEGORIES, EXPERIENCES, CERTIFICATIONS, EDUCATION, PROJECTS } from './data';
 
@@ -87,6 +88,13 @@ const App: React.FC = () => {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToExperience = (id: string) => {
+    const element = document.getElementById(`exp-${id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   return (
@@ -209,48 +217,76 @@ const App: React.FC = () => {
               <h3 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Professional Experience</h3>
             </div>
             <p className="text-slate-500 max-w-sm text-lg leading-relaxed">
-              Driving engineering excellence at world-class financial institutions.
+              A timeline of engineering excellence across international financial hubs.
             </p>
           </div>
 
-          <div className="space-y-10">
-            {EXPERIENCES.map((exp, idx) => (
-              <div 
-                key={exp.id} 
-                className={`reveal delay-${(idx % 3 + 1) * 100} group relative grid grid-cols-1 lg:grid-cols-12 gap-10 p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 transition-all duration-500`}
-              >
-                <div className="lg:col-span-4">
-                  <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
-                    {exp.period}
-                  </span>
-                  <h4 className="text-3xl font-bold text-slate-900 mb-2">{exp.company}</h4>
-                  <p className="text-xl font-bold text-blue-600 mb-3">{exp.role}</p>
-                  <p className="text-slate-400 flex items-center gap-2 text-sm mb-8 font-medium">
-                    <Briefcase size={16} />
-                    {exp.location}
-                  </p>
-                  <div className="flex flex-wrap gap-2.5">
-                    {exp.technologies.map((tech) => (
-                      <span key={tech} className="px-3 py-1.5 bg-slate-50 text-slate-500 border border-slate-100 rounded-lg text-xs font-bold transition-colors group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100">
-                        {tech}
-                      </span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            {/* Career Timeline Visualization */}
+            <div className="lg:col-span-3 hidden lg:block">
+              <div className="sticky top-32 space-y-12 reveal">
+                <div className="relative pl-8">
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200"></div>
+                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Quick Navigation</h4>
+                  <div className="space-y-10">
+                    {EXPERIENCES.map((exp, idx) => (
+                      <button 
+                        key={exp.id} 
+                        onClick={() => scrollToExperience(exp.id)}
+                        className="relative block text-left group w-full"
+                      >
+                        <div className={`absolute -left-10 top-1.5 w-4 h-4 rounded-full border-4 border-slate-50 transition-all duration-300 ${idx === 0 ? 'bg-blue-600 scale-125 shadow-lg shadow-blue-200' : 'bg-slate-300 group-hover:bg-blue-400'}`}></div>
+                        <p className="text-xs font-black text-blue-600 uppercase tracking-tighter mb-1">{exp.period}</p>
+                        <h5 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">{exp.company}</h5>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{exp.role}</p>
+                      </button>
                     ))}
                   </div>
                 </div>
-                <div className="lg:col-span-8 border-t lg:border-t-0 lg:border-l border-slate-100 pt-8 lg:pt-0 lg:pl-12">
-                  <ul className="space-y-5">
-                    {exp.responsibilities.map((resp, i) => (
-                      <li key={i} className="flex items-start gap-4 text-slate-600 text-lg leading-relaxed">
-                        <div className="mt-1.5 bg-blue-100 rounded-full p-1 group-hover:bg-blue-600 transition-colors">
-                          <ChevronRight size={14} className="text-blue-600 group-hover:text-white transition-colors shrink-0" />
-                        </div>
-                        {resp}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Experience Cards */}
+            <div className="lg:col-span-9 space-y-10">
+              {EXPERIENCES.map((exp, idx) => (
+                <div 
+                  id={`exp-${exp.id}`}
+                  key={exp.id} 
+                  className={`reveal delay-${(idx % 3 + 1) * 100} group relative grid grid-cols-1 lg:grid-cols-12 gap-10 p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 transition-all duration-500`}
+                >
+                  <div className="lg:col-span-4">
+                    <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
+                      {exp.period}
+                    </span>
+                    <h4 className="text-3xl font-bold text-slate-900 mb-2">{exp.company}</h4>
+                    <p className="text-xl font-bold text-blue-600 mb-3">{exp.role}</p>
+                    <p className="text-slate-400 flex items-center gap-2 text-sm mb-8 font-medium">
+                      <Briefcase size={16} />
+                      {exp.location}
+                    </p>
+                    <div className="flex flex-wrap gap-2.5">
+                      {exp.technologies.map((tech) => (
+                        <span key={tech} className="px-3 py-1.5 bg-slate-50 text-slate-500 border border-slate-100 rounded-lg text-xs font-bold transition-colors group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="lg:col-span-8 border-t lg:border-t-0 lg:border-l border-slate-100 pt-8 lg:pt-0 lg:pl-12">
+                    <ul className="space-y-5">
+                      {exp.responsibilities.map((resp, i) => (
+                        <li key={i} className="flex items-start gap-4 text-slate-600 text-lg leading-relaxed">
+                          <div className="mt-1.5 bg-blue-100 rounded-full p-1 group-hover:bg-blue-600 transition-colors">
+                            <ChevronRight size={14} className="text-blue-600 group-hover:text-white transition-colors shrink-0" />
+                          </div>
+                          {resp}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
