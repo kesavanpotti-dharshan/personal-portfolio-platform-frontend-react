@@ -488,13 +488,29 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex gap-4">
-              <a href="#" className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1">
+              <a 
+                href="https://github.com/dharshankesavanpotti" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="GitHub Profile"
+                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
+              >
                 <Github size={24} />
               </a>
-              <a href="#" className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1">
+              <a 
+                href="https://linkedin.com/in/dharshankesavanpotti" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="LinkedIn Profile"
+                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
+              >
                 <Linkedin size={24} />
               </a>
-              <a href="#" className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1">
+              <a 
+                href="#" 
+                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
+                aria-label="External Link"
+              >
                 <ExternalLink size={24} />
               </a>
             </div>
