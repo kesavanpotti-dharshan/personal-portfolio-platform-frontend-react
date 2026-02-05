@@ -52,6 +52,16 @@
             animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
+        /* Subtle Bounce for Icons */
+        @keyframes subtleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .group:hover .animate-subtle-bounce {
+            animation: subtleBounce 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+
         /* Custom Scrollbar for a premium feel */
         ::-webkit-scrollbar {
             width: 8px;

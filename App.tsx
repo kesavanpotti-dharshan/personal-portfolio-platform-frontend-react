@@ -5,7 +5,6 @@ import {
   Code2, 
   GraduationCap, 
   Mail, 
-  Phone, 
   ChevronRight, 
   Award, 
   ExternalLink, 
@@ -19,9 +18,12 @@ import {
   Globe,
   ArrowUp,
   FileText,
-  Calendar
+  Calendar,
+  Database,
+  Layout,
+  Send
 } from 'lucide-react';
-import { PERSONAL_INFO, SKILL_CATEGORIES, EXPERIENCES, CERTIFICATIONS, EDUCATION, PROJECTS } from './data';
+import { PERSONAL_INFO, SKILL_CATEGORIES, EXPERIENCES, CERTIFICATIONS, EDUCATION } from './data';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -31,7 +33,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       // Update Active Section
-      const sections = ['home', 'experience', 'projects', 'skills', 'certifications', 'contact'];
+      const sections = ['home', 'experience', 'skills', 'certifications', 'contact'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -80,7 +82,6 @@ const App: React.FC = () => {
   const navItems = [
     { label: 'Home', id: 'home' },
     { label: 'Experience', id: 'experience' },
-    { label: 'Projects', id: 'projects' },
     { label: 'Skills', id: 'skills' },
     { label: 'Certifications', id: 'certifications' },
     { label: 'Contact', id: 'contact' },
@@ -95,6 +96,24 @@ const App: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  };
+
+  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log('Inquiry Received:', data);
+    alert('Thank you for your inquiry! This is a simulation - check the console for the form data.');
+    e.currentTarget.reset();
+  };
+
+  const getSkillIcon = (category: string) => {
+    const lowerCat = category.toLowerCase();
+    if (lowerCat.includes('.net')) return <Cpu size={24} />;
+    if (lowerCat.includes('cloud')) return <Cloud size={24} />;
+    if (lowerCat.includes('frontend')) return <Layout size={24} />;
+    if (lowerCat.includes('databases')) return <Database size={24} />;
+    return <Terminal size={24} />;
   };
 
   return (
@@ -169,13 +188,10 @@ const App: React.FC = () => {
               <a href="#experience" className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-200 transition-all active:scale-[0.98]">
                 View Career Path
               </a>
-              <a href="#projects" className="bg-white text-slate-900 border border-slate-200 px-10 py-5 rounded-2xl font-bold hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98]">
-                Featured Projects
-              </a>
             </div>
 
-            {/* View Resume Secondary CTA */}
-            <div className="mt-8 animate-fade-in [animation-delay:750ms]">
+            {/* View Resume Secondary CTA & Hire Me Tertiary CTA */}
+            <div className="mt-8 flex flex-wrap items-center gap-6 animate-fade-in [animation-delay:750ms]">
               <button 
                 onClick={() => window.print()}
                 className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 font-bold text-sm transition-all group px-2 py-1"
@@ -184,6 +200,15 @@ const App: React.FC = () => {
                 <span>View Full Resume (PDF)</span>
                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </button>
+
+              <a 
+                href="#contact"
+                className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold text-sm transition-all group px-2 py-1"
+              >
+                <Send size={18} className="group-hover:rotate-12 transition-transform" />
+                <span>Hire Me</span>
+                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </a>
             </div>
             
             <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-12 border-t border-slate-100 pt-12 animate-fade-in [animation-delay:800ms]">
@@ -252,7 +277,7 @@ const App: React.FC = () => {
                 <div 
                   id={`exp-${exp.id}`}
                   key={exp.id} 
-                  className={`reveal delay-${(idx % 3 + 1) * 100} group relative grid grid-cols-1 lg:grid-cols-12 gap-10 p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 transition-all duration-500`}
+                  className={`reveal delay-${(idx % 3 + 1) * 100} group relative grid grid-cols-1 lg:grid-cols-12 gap-10 p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 hover:scale-[1.01] transition-all duration-500`}
                 >
                   <div className="lg:col-span-4">
                     <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
@@ -291,62 +316,6 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20 reveal">
-            <h2 className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-4">Portfolio</h2>
-            <h3 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Key Architectural Projects</h3>
-            <p className="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
-              Standardized solutions and high-performance platforms delivered to enterprise environments.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {PROJECTS.map((project, idx) => (
-              <div 
-                key={project.id} 
-                className={`reveal delay-${(idx % 2 + 1) * 200} group bg-slate-50/50 border border-slate-100 p-10 rounded-[3rem] hover:bg-white hover:shadow-2xl hover:shadow-blue-50 hover:border-blue-200 transition-all duration-500 flex flex-col h-full`}
-              >
-                <div className="flex justify-between items-start mb-8">
-                  <div className="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center shadow-md group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 group-hover:rotate-6">
-                    {project.icon === 'cloud' && <Cloud size={32} />}
-                    {project.icon === 'layers' && <Layers size={32} />}
-                    {project.icon === 'code' && <Code2 size={32} />}
-                    {project.icon === 'cpu' && <Cpu size={32} />}
-                  </div>
-                  <div className="flex gap-4">
-                    {project.githubUrl && (
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-3 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 hover:shadow-lg transition-all active:scale-90">
-                        <Github size={24} />
-                      </a>
-                    )}
-                    {project.liveUrl && (
-                      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="p-3 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-blue-600 hover:shadow-lg transition-all active:scale-90">
-                        <Globe size={24} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-                <h4 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight group-hover:text-blue-600 transition-colors">
-                  {project.title}
-                </h4>
-                <p className="text-slate-500 mb-10 flex-grow text-lg leading-relaxed font-medium">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2.5">
-                  {project.technologies.map(tech => (
-                    <span key={tech} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-black uppercase tracking-wider group-hover:border-blue-100 group-hover:bg-blue-50/50">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Skills Section */}
       <section id="skills" className="py-24 bg-slate-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -361,13 +330,12 @@ const App: React.FC = () => {
                 key={cat.category} 
                 className={`reveal delay-${(idx + 1) * 100} p-10 bg-white rounded-[2.5rem] border border-slate-100 hover:border-blue-200 hover:shadow-2xl transition-all duration-500 group h-full`}
               >
-                <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-8 shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
-                  {idx === 0 && <Layers size={28} />}
-                  {idx === 1 && <Cloud size={28} />}
-                  {idx === 2 && <Cpu size={28} />}
-                  {idx === 3 && <Terminal size={28} />}
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 animate-subtle-bounce">
+                    {getSkillIcon(cat.category)}
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 tracking-tight leading-tight">{cat.category}</h4>
                 </div>
-                <h4 className="text-2xl font-bold text-slate-900 mb-8 tracking-tight">{cat.category}</h4>
                 <div className="flex flex-wrap gap-2.5">
                   {cat.skills.map((skill) => (
                     <span 
@@ -471,39 +439,30 @@ const App: React.FC = () => {
                       <p className="text-2xl font-bold tracking-tight">{PERSONAL_INFO.email}</p>
                     </div>
                   </a>
-                  <a href={`tel:${PERSONAL_INFO.phone}`} className="flex items-center gap-6 group max-w-fit">
-                    <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center group-hover:bg-indigo-600 transition-all duration-300 group-hover:-translate-y-1">
-                      <Phone size={28} />
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-xs font-black uppercase tracking-[0.2em] mb-1">Phone</p>
-                      <p className="text-2xl font-bold tracking-tight">{PERSONAL_INFO.phone}</p>
-                    </div>
-                  </a>
                 </div>
               </div>
 
               <div className="bg-white rounded-[2.5rem] p-10 text-slate-900 shadow-2xl reveal delay-300">
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-6" onSubmit={handleContactSubmit}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Name</label>
-                      <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:scale-[1.01] outline-none transition-all duration-300 font-semibold" placeholder="John Doe" />
+                      <input name="from_name" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold" placeholder="John Doe" required />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                      <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:scale-[1.01] outline-none transition-all duration-300 font-semibold" placeholder="john@company.com" />
+                      <input name="from_email" type="email" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold" placeholder="john@company.com" required />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:scale-[1.01] outline-none transition-all duration-300 font-semibold" placeholder="Project Opportunity" />
+                    <input name="subject" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold" placeholder="Project Opportunity" required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Message</label>
-                    <textarea rows={5} className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:scale-[1.01] outline-none transition-all duration-300 resize-none font-semibold" placeholder="How can I help you?"></textarea>
+                    <textarea name="message" rows={5} className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 resize-none font-semibold" placeholder="How can I help you?" required></textarea>
                   </div>
-                  <button className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 active:scale-[0.98]">
+                  <button type="submit" className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 active:scale-[0.98]">
                     Send Inquiry
                     <ChevronRight size={20} />
                   </button>
