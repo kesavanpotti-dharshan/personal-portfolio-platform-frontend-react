@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Briefcase, 
-  Code2, 
-  GraduationCap, 
-  Mail, 
-  ChevronRight, 
-  Award, 
-  ExternalLink, 
-  Github, 
+import {
+  Briefcase,
+  Code2,
+  GraduationCap,
+  Mail,
+  ChevronRight,
+  Award,
+  ExternalLink,
+  Github,
   Linkedin,
   Terminal,
   Cloud,
@@ -98,13 +98,55 @@ const App: React.FC = () => {
     }
   };
 
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    console.log('Inquiry Received:', data);
-    alert('Thank you for your inquiry! This is a simulation - check the console for the form data.');
-    e.currentTarget.reset();
+
+    // Validate fields
+    if (!data.from_name || !data.from_email || !data.subject || !data.message) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    try {
+      const apiKey = import.meta.env.VITE_MAILGUN_API_KEY;
+      const domain = import.meta.env.VITE_MAILGUN_DOMAIN;
+      const recipient = import.meta.env.VITE_MAILGUN_RECIPIENT;
+      const from = import.meta.env.VITE_MAILGUN_FROM;
+
+      if (!apiKey || !domain || !recipient) {
+        throw new Error('Missing Mailgun configuration');
+      }
+
+      const formBody = new URLSearchParams();
+      formBody.append('from', from);
+      formBody.append('to', recipient);
+      formBody.append('subject', `Portfolio Contact: ${data.subject}`);
+      formBody.append('text', `Name: ${data.from_name}\nEmail: ${data.from_email}\nMessage:\n${data.message}`);
+
+      const response = await fetch(`/api/mailgun/${domain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa('api:' + apiKey),
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formBody
+      });
+
+      if (response.ok) {
+        alert('Thank you for your inquiry! Your message has been sent.');
+        form.reset();
+      } else {
+        const errorData = await response.json();
+        console.error('Mailgun Error:', errorData);
+        alert('Failed to send message. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('An error occurred while sending your message.');
+    }
   };
 
   const getSkillIcon = (category: string) => {
@@ -120,7 +162,7 @@ const App: React.FC = () => {
     <div className="min-h-screen relative">
       {/* Scroll Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 z-[60] pointer-events-none">
-        <div 
+        <div
           className="h-full bg-blue-600 transition-all duration-150 ease-out"
           style={{ width: `${scrollProgress}%` }}
         ></div>
@@ -141,21 +183,20 @@ const App: React.FC = () => {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all ${
-                    activeSection === item.id 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-slate-600 hover:text-blue-500 hover:bg-slate-50'
-                  }`}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all ${activeSection === item.id
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-slate-600 hover:text-blue-500 hover:bg-slate-50'
+                    }`}
                 >
                   {item.label}
                 </a>
               ))}
             </div>
             <div className="flex items-center gap-4">
-               <button 
+              <button
                 onClick={() => window.print()}
                 className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-md active:scale-95"
-               >
+              >
                 <Download size={16} />
                 <span className="hidden sm:inline">Resume</span>
               </button>
@@ -169,7 +210,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50 -z-10 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-50 -z-10"></div>
-          
+
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-bold mb-8 animate-fade-in shadow-sm shadow-blue-100">
               <span className="relative flex h-2.5 w-2.5">
@@ -179,7 +220,7 @@ const App: React.FC = () => {
               Actively seeking leadership opportunities
             </div>
             <h1 className="text-5xl lg:text-8xl font-bold tracking-tighter text-slate-900 mb-8 leading-[1.05] animate-fade-in [animation-delay:200ms]">
-              Lead .NET Developer & <br/><span className="text-blue-600">Cloud Architect</span>
+              Lead .NET Developer & <br /><span className="text-blue-600">Cloud Architect</span>
             </h1>
             <p className="text-xl text-slate-600 mb-12 leading-relaxed max-w-2xl animate-fade-in [animation-delay:400ms]">
               With 13+ years of enterprise engineering, I bridge the gap between complex business logic and scalable cloud-native architectures.
@@ -192,7 +233,7 @@ const App: React.FC = () => {
 
             {/* View Resume Secondary CTA & Hire Me Tertiary CTA */}
             <div className="mt-8 flex flex-wrap items-center gap-6 animate-fade-in [animation-delay:750ms]">
-              <button 
+              <button
                 onClick={() => window.print()}
                 className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 font-bold text-sm transition-all group px-2 py-1"
               >
@@ -201,7 +242,7 @@ const App: React.FC = () => {
                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <a 
+              <a
                 href="#contact"
                 className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold text-sm transition-all group px-2 py-1"
               >
@@ -210,7 +251,7 @@ const App: React.FC = () => {
                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
-            
+
             <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-12 border-t border-slate-100 pt-12 animate-fade-in [animation-delay:800ms]">
               <div>
                 <p className="text-4xl font-extrabold text-slate-900 tracking-tighter">13+</p>
@@ -255,8 +296,8 @@ const App: React.FC = () => {
                   <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Quick Navigation</h4>
                   <div className="space-y-10">
                     {EXPERIENCES.map((exp, idx) => (
-                      <button 
-                        key={exp.id} 
+                      <button
+                        key={exp.id}
                         onClick={() => scrollToExperience(exp.id)}
                         className="relative block text-left group w-full"
                       >
@@ -274,9 +315,9 @@ const App: React.FC = () => {
             {/* Experience Cards */}
             <div className="lg:col-span-9 space-y-10">
               {EXPERIENCES.map((exp, idx) => (
-                <div 
+                <div
                   id={`exp-${exp.id}`}
-                  key={exp.id} 
+                  key={exp.id}
                   className={`reveal delay-${(idx % 3 + 1) * 100} group relative grid grid-cols-1 lg:grid-cols-12 gap-10 p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-blue-200 hover:scale-[1.01] transition-all duration-500`}
                 >
                   <div className="lg:col-span-4">
@@ -326,8 +367,8 @@ const App: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {SKILL_CATEGORIES.map((cat, idx) => (
-              <div 
-                key={cat.category} 
+              <div
+                key={cat.category}
                 className={`reveal delay-${(idx + 1) * 100} p-10 bg-white rounded-[2.5rem] border border-slate-100 hover:border-blue-200 hover:shadow-2xl transition-all duration-500 group h-full`}
               >
                 <div className="flex items-center gap-4 mb-8">
@@ -338,8 +379,8 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {cat.skills.map((skill) => (
-                    <span 
-                      key={skill} 
+                    <span
+                      key={skill}
                       className="px-4 py-2 bg-slate-50 border border-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:border-blue-400 hover:text-blue-600 hover:bg-white transition-all cursor-default"
                     >
                       {skill}
@@ -357,7 +398,7 @@ const App: React.FC = () => {
         <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/5 -skew-x-12 transform translate-x-1/4"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            
+
             {/* Certifications */}
             <div className="reveal">
               <div className="flex items-center gap-5 mb-12">
@@ -389,7 +430,7 @@ const App: React.FC = () => {
               </div>
               <div className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden group">
                 <div className="absolute -right-8 -bottom-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <GraduationCap size={180} />
+                  <GraduationCap size={180} />
                 </div>
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-6">
@@ -421,14 +462,14 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="reveal bg-slate-900 rounded-[4rem] p-10 md:p-20 lg:p-24 text-white relative overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 opacity-40"></div>
-            
+
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
               <div>
                 <h2 className="text-5xl md:text-6xl font-extrabold mb-8 leading-[1.1] tracking-tighter">Let's build the <span className="text-blue-500 underline decoration-indigo-500 underline-offset-8">next big thing</span> together.</h2>
                 <p className="text-slate-400 text-xl mb-12 leading-relaxed font-medium">
                   Looking for a technical leader to navigate your next digital transformation? My inbox is always open.
                 </p>
-                
+
                 <div className="space-y-8">
                   <a href={`mailto:${PERSONAL_INFO.email}`} className="flex items-center gap-6 group max-w-fit">
                     <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 group-hover:-translate-y-1">
@@ -486,35 +527,35 @@ const App: React.FC = () => {
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Lead .NET Developer</p>
               </div>
             </div>
-            
+
             <div className="flex gap-4">
-              <a 
-                href="https://github.com/dharshankesavanpotti" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://github.com/dharshankesavanpotti"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="GitHub Profile"
                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
               >
                 <Github size={24} />
               </a>
-              <a 
-                href="https://linkedin.com/in/dharshankesavanpotti" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://linkedin.com/in/dharshankesavanpotti"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="LinkedIn Profile"
                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
               >
                 <Linkedin size={24} />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all hover:-translate-y-1"
                 aria-label="External Link"
               >
                 <ExternalLink size={24} />
               </a>
             </div>
-            
+
             <div className="text-center md:text-right">
               <p className="text-slate-900 font-bold text-sm mb-1">
                 &copy; {new Date().getFullYear()} Dharshan Kesavan Potti
@@ -528,11 +569,10 @@ const App: React.FC = () => {
       </footer>
 
       {/* Back to Top */}
-      <button 
+      <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-2xl transition-all duration-500 z-50 hover:bg-slate-900 hover:text-white group ${
-          showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'
-        }`}
+        className={`fixed bottom-8 right-8 w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-2xl transition-all duration-500 z-50 hover:bg-slate-900 hover:text-white group ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'
+          }`}
       >
         <ArrowUp size={24} className="group-hover:-translate-y-1 transition-transform" />
       </button>
