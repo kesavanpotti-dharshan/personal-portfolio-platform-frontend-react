@@ -98,55 +98,13 @@ const App: React.FC = () => {
     }
   };
 
-  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+    const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-
-    // Validate fields
-    if (!data.from_name || !data.from_email || !data.subject || !data.message) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    try {
-      const apiKey = import.meta.env.VITE_MAILGUN_API_KEY;
-      const domain = import.meta.env.VITE_MAILGUN_DOMAIN;
-      const recipient = import.meta.env.VITE_MAILGUN_RECIPIENT;
-      const from = import.meta.env.VITE_MAILGUN_FROM;
-
-      if (!apiKey || !domain || !recipient) {
-        throw new Error('Missing Mailgun configuration');
-      }
-
-      const formBody = new URLSearchParams();
-      formBody.append('from', from);
-      formBody.append('to', recipient);
-      formBody.append('subject', `Portfolio Contact: ${data.subject}`);
-      formBody.append('text', `Name: ${data.from_name}\nEmail: ${data.from_email}\nMessage:\n${data.message}`);
-
-      const response = await fetch(`/api/mailgun/${domain}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + btoa('api:' + apiKey),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: formBody
-      });
-
-      if (response.ok) {
-        alert('Thank you for your inquiry! Your message has been sent.');
-        form.reset();
-      } else {
-        const errorData = await response.json();
-        console.error('Mailgun Error:', errorData);
-        alert('Failed to send message. Please try again later.');
-      }
-    } catch (error) {
-      console.error('Error sending email:', error);
-      alert('An error occurred while sending your message.');
-    }
+    console.log('Inquiry Received:', data);
+    alert('Thank you for your inquiry! This is a simulation - check the console for the form data.');
+    e.currentTarget.reset();
   };
 
   const getSkillIcon = (category: string) => {
