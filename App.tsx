@@ -151,13 +151,14 @@ const App: React.FC = () => {
               ))}
             </div>
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => window.print()}
+              <a
+                href="/resume/Dharshan_Kesavan_Potti_Resume.pdf"
+                download="Dharshan_Kesavan_Potti_Resume.pdf"
                 className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-800 transition-all shadow-md active:scale-95"
               >
                 <Download size={16} />
                 <span className="hidden sm:inline">Resume</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -191,14 +192,15 @@ const App: React.FC = () => {
 
             {/* View Resume Secondary CTA & Hire Me Tertiary CTA */}
             <div className="mt-8 flex flex-wrap items-center gap-6 animate-fade-in [animation-delay:750ms]">
-              <button
-                onClick={() => window.print()}
+              <a
+                href="/resume/Dharshan_Kesavan_Potti_Resume.pdf"
+                download="Dharshan_Kesavan_Potti_Resume.pdf"
                 className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 font-bold text-sm transition-all group px-2 py-1"
               >
                 <FileText size={18} className="group-hover:scale-110 transition-transform" />
                 <span>View Full Resume (PDF)</span>
                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </button>
+              </a>
 
               <a
                 href="#contact"
