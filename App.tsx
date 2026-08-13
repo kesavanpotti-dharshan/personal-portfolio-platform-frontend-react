@@ -23,6 +23,9 @@ import {
   Send,
   Menu,
   X,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import {
   PERSONAL_INFO,
@@ -32,6 +35,11 @@ import {
   CERTIFICATIONS,
   EDUCATION,
 } from "./data";
+
+// Set this in a .env file: VITE_CONTACT_API_URL=https://personal-portfolio-contact-function-gseaezhbataxhves.canadacentral-01.azurewebsites.net/api/SubmitContactForm?code=<your-function-key>
+const CONTACT_API_URL = import.meta.env.VITE_CONTACT_API_URL as string;
+
+type FormStatus = "idle" | "submitting" | "success" | "error";
 
 const App: React.FC = () => {
   // Tailwind's JIT scanner only picks up class names that appear literally
@@ -50,6 +58,8 @@ const App: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState<FormStatus>("idle");
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,15 +144,52 @@ const App: React.FC = () => {
     }
   };
 
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log("Inquiry Received:", data);
-    alert(
-      "Thank you for your inquiry! This is a simulation - check the console for the form data.",
-    );
-    e.currentTarget.reset();
+
+    if (!CONTACT_API_URL) {
+      setFormStatus("error");
+      setFormErrorMessage(
+        "Contact form is not configured. Please email me directly instead.",
+      );
+      return;
+    }
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: (formData.get("from_name") as string) ?? "",
+      email: (formData.get("from_email") as string) ?? "",
+      subject: (formData.get("subject") as string) ?? "",
+      message: (formData.get("message") as string) ?? "",
+    };
+
+    setFormStatus("submitting");
+    setFormErrorMessage(null);
+
+    try {
+      const response = await fetch(CONTACT_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        throw new Error(
+          text || `Request failed with status ${response.status}`,
+        );
+      }
+
+      setFormStatus("success");
+      form.reset();
+    } catch (error) {
+      console.error("Contact form submission failed:", error);
+      setFormStatus("error");
+      setFormErrorMessage(
+        "Something went wrong sending your message. Please try again or email me directly.",
+      );
+    }
   };
 
   const getSkillIcon = (category: string) => {
@@ -729,65 +776,111 @@ const App: React.FC = () => {
               </div>
 
               <div className="bg-white rounded-[2.5rem] p-10 text-slate-900 shadow-2xl reveal delay-300">
-                <form className="space-y-6" onSubmit={handleContactSubmit}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {formStatus === "success" ? (
+                  <div className="flex flex-col items-center justify-center text-center py-12">
+                    <div className="w-16 h-16 bg-green-50 rounded-3xl flex items-center justify-center mb-6">
+                      <CheckCircle2 size={32} className="text-green-600" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-slate-900 mb-2">
+                      Message sent!
+                    </h4>
+                    <p className="text-slate-500 mb-8">
+                      Thanks for reaching out — I'll get back to you soon.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFormStatus("idle")}
+                      className="text-blue-600 font-bold text-sm hover:text-blue-700 transition-colors"
+                    >
+                      Send another message
+                    </button>
+                  </div>
+                ) : (
+                  <form className="space-y-6" onSubmit={handleContactSubmit}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+                          Name
+                        </label>
+                        <input
+                          name="from_name"
+                          type="text"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold disabled:opacity-60"
+                          placeholder="John Doe"
+                          required
+                          disabled={formStatus === "submitting"}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+                          Email
+                        </label>
+                        <input
+                          name="from_email"
+                          type="email"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold disabled:opacity-60"
+                          placeholder="john@company.com"
+                          required
+                          disabled={formStatus === "submitting"}
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Name
+                        Subject
                       </label>
                       <input
-                        name="from_name"
+                        name="subject"
                         type="text"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold"
-                        placeholder="John Doe"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold disabled:opacity-60"
+                        placeholder="Project Opportunity"
                         required
+                        disabled={formStatus === "submitting"}
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Email
+                        Message
                       </label>
-                      <input
-                        name="from_email"
-                        type="email"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold"
-                        placeholder="john@company.com"
+                      <textarea
+                        name="message"
+                        rows={5}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 resize-none font-semibold disabled:opacity-60"
+                        placeholder="How can I help you?"
                         required
-                      />
+                        disabled={formStatus === "submitting"}
+                      ></textarea>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Subject
-                    </label>
-                    <input
-                      name="subject"
-                      type="text"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 font-semibold"
-                      placeholder="Project Opportunity"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Message
-                    </label>
-                    <textarea
-                      name="message"
-                      rows={5}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 focus:scale-[1.02] focus:shadow-lg focus:shadow-blue-500/10 outline-none transition-all duration-300 resize-none font-semibold"
-                      placeholder="How can I help you?"
-                      required
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 active:scale-[0.98]"
-                  >
-                    Send Inquiry
-                    <ChevronRight size={20} />
-                  </button>
-                </form>
+
+                    {formStatus === "error" && (
+                      <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-sm font-semibold">
+                        <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                        <span>
+                          {formErrorMessage ??
+                            "Something went wrong. Please try again."}
+                        </span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={formStatus === "submitting"}
+                      className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-slate-900"
+                    >
+                      {formStatus === "submitting" ? (
+                        <>
+                          <Loader2 size={20} className="animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          Send Inquiry
+                          <ChevronRight size={20} />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
