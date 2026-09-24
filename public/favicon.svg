@@ -1,20 +1,21 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#1e293b"/>
-      <stop offset="1" stop-color="#2563eb"/>
+      <stop offset="0" stop-color="#0b1b2b"/>
+      <stop offset="1" stop-color="#122740"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#23405c" stroke-width="1.5"/>
   <text
     x="32"
-    y="34"
+    y="35"
     text-anchor="middle"
     dominant-baseline="central"
-    font-family="Arial, Helvetica, sans-serif"
+    font-family="ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace"
     font-weight="700"
-    font-size="22"
-    fill="#ffffff"
-    letter-spacing="-1"
+    font-size="20"
+    fill="#e8a33d"
+    letter-spacing="-0.5"
   >DKP</text>
 </svg>
