@@ -2,8 +2,8 @@ import React from "react";
 import { ChevronRight, FileText, Send } from "lucide-react";
 
 const STATS = [
-  { value: "13+", label: "Years Exp" },
-  { value: ".NET 8", label: "Backend" },
+  { value: "14", label: "Years Exp" },
+  { value: ".NET 10", label: "Backend" },
   { value: "Azure", label: "Cloud Native" },
   { value: "SQL & NoSQL", label: "Database" },
   { value: "React", label: "Modern Frontend" },
@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
             <span className="text-accent">Cloud Architect</span>
           </h1>
           <p className="font-sans text-lg sm:text-xl text-muted-1 mb-12 leading-relaxed max-w-2xl animate-fade-in [animation-delay:400ms]">
-            With 13+ years of enterprise engineering, I bridge the gap between
+            With 14 years of enterprise engineering, I bridge the gap between
             complex business logic and scalable cloud-native architectures.
           </p>
           <div className="flex flex-wrap gap-5 items-center animate-fade-in [animation-delay:600ms]">

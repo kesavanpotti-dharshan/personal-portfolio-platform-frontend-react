@@ -12,14 +12,14 @@ export const PERSONAL_INFO = {
   visa: "H1B – i140 Approved",
   email: "kesavanpotti.dharshan@gmail.com",
   summary:
-    "Professional Software Developer with over 13 years of extensive experience in all phases of the Software Development Life Cycle (SDLC). Expert in designing, developing, and deploying enterprise-grade web applications using Microsoft technologies, Cloud-native architectures (Azure/Kubernetes), and modern frontend frameworks like React.",
+    "Professional Software Developer with over 14 years of extensive experience in all phases of the Software Development Life Cycle (SDLC). Expert in designing, developing, and deploying enterprise-grade web applications using Microsoft technologies, Cloud-native architectures (Azure/Kubernetes), and modern frontend frameworks like React.",
 };
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   {
     category: ".NET Ecosystem",
     skills: [
-      ".NET 8",
+      ".NET 10",
       ".NET Core",
       "ASP.NET MVC",
       "Web API",
