@@ -120,11 +120,34 @@ export const PROJECTS: Project[] = [
 
 export const EXPERIENCES: Experience[] = [
   {
+    id: "west-bend",
+    company: "West Bend Mutual Insurance",
+    location: "West Bend, Wisconsin, USA",
+    role: "Advanced Software Engineer",
+    period: "Sept 2026 – Present",
+    responsibilities: [
+      "Designing cloud-native services using .NET, C#, and React for the ADM program, modernizing legacy XML integrations into RESTful APIs.",
+      "Applying DDD and the Saga pattern to model insurance workflows and orchestrate distributed transactions across event-driven microservices.",
+      "Designing asynchronous, event-driven integrations using Azure Service Bus and API Management for commercial insurance systems.",
+      "Building CI/CD pipelines in Azure DevOps and establishing observability with Application Insights and OpenTelemetry for production support.",
+      "Applying secure-by-design and TDD practices, collaborating cross-functionally to translate business requirements into scalable service designs.",
+    ],
+    technologies: [
+      "C#",
+      ".Net 10",
+      "React",
+      "Azure Service Bus",
+      "API Management",
+      "Azure DevOps",
+      "DDD",
+    ],
+  },
+  {
     id: "usb",
     company: "US Bank",
     location: "Brookfield, Wisconsin, USA",
     role: "Lead .Net Developer",
-    period: "Oct 2025 – Till Date",
+    period: "Oct 2025 – Aug 2026",
     responsibilities: [
       "Architected and delivered cloud-native applications using .NET 8, ASP.NET Core, and React, powering scalable REST APIs on Azure.",
       "Built microservices on Azure Kubernetes Service (AKS) with Docker and Helm, improving scalability and deployment consistency.",
